@@ -1,0 +1,43 @@
+<?php
+
+$githubUsername = "your-username"; // Замените на ваше имя пользователя на GitHub
+
+// Формируем URL для запроса информации о пользователе
+$url = "https://api.github.com/users/$githubUsername";
+
+// Создаем заголовки запроса с указанием версии API и User-Agent
+$headers = [
+    'Accept: application/vnd.github.v3+json',
+    'User-Agent: PHP'
+];
+
+// Инициализируем cURL и устанавливаем параметры
+$curl = curl_init();
+curl_setopt_array($curl, [
+    CURLOPT_URL => $url,
+    CURLOPT_HTTPHEADER => $headers,
+    CURLOPT_RETURNTRANSFER => true
+]);
+
+// Выполняем запрос и получаем ответ
+$response = curl_exec($curl);
+$info = curl_getinfo($curl);
+
+// Проверяем статус ответа
+if ($info['http_code'] === 200) {
+    // Ответ успешный, декодируем JSON
+    $userData = json_decode($response, true);
+
+    // Выводим информацию о пользователе
+    echo "Username: " . $userData['login'] . "\n";
+    echo "Name: " . $userData['name'] . "\n";
+    echo "Bio: " . $userData['bio'] . "\n";
+    echo "Public Repos: " . $userData['public_repos'] . "\n";
+} else {
+    // Ошибка при выполнении запроса
+    echo "Error: " . $info['http_code'] . "\n";
+    echo "Response: " . $response . "\n";
+}
+
+// Закрываем соединение
+curl_close($curl);
